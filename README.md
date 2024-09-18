@@ -1,36 +1,13 @@
-# TrollRestore
-TrollRestore is a TrollStore installer for iOS/iPadOS 15.2 - 16.7 RC (20H18) and 17.0. It will replace a system app of your choice with a TrollHelper binary, which you can then open and use to install TrollStore. TrollRestore makes use of backups in order to restore the binary to a system app container. 
+# Quick sparserestore exploit script 
+### based on [TrollRestore](https://github.com/JJTech0130/TrollRestore)
 
-A guide for installing TrollStore using TrollRestore can be found [here](https://ios.cfw.guide/installing-trollstore-trollrestore).
+This fork of the TrollRestore repository makes use of the exploit that installs TrollStore.
 
-# Usage
-To run the script, clone this repository and run the following commands:
-```sh
-pip install -r requirements.txt
-python3 trollstore.py
-```
+Guide for Apple Intelligence: https://gist.github.com/f1shy-dev/23b4a78dc283edd30ae2b2e6429129b5
 
-# Post-installation
-TrollRestore does not restore a proper persistence helper - it simply replaces the main binary of a system app with an embedded TrollHelper. Thus, after installing TrollStore, it is recommended to install a persistence helper (you can use the same app used with TrollRestore as your persistence helper). Due to the nature of the installer (and its use of backups), the only way to restore your chosen app to it's original state is to delete it and re-install the app from the App Store.
-
-# iOS Version Support
-As stated above, this installer supports iOS/iPadOS 15.2 - 16.7 RC (20H18) and 17.0. 
-
-Note: All 4 versions of iOS 17.0 are supported: 21A326/21A327/21A329/21A331
-
-It should theoretically support iOS 14 and iOS 15.0 - 15.1.1, but during our testing, we experienced issues restoring the backup to an iOS 14 device, and later also found the same issues with devices on iOS 15.0 - 15.1.1. Therefore, using TrollRestore on a device below iOS 15 has been disabled for the time being.
-
-Note: It's not currently disabled for 15.0 - 15.1.1, due to these issues not being discovered until after TrollRestore released.
-
-# Computer Requirements
-To use the precompiled builds, you will either need:
-
-macOS: A Mac with macOS 11 (Big Sur) or higher.
-
-Windows: A PC running Windows 10 or higher. iTunes must be installed.
-
-# Need Help?
-If you run into any issues during the installation, you can get support on the [r/Jailbreak Discord server](https://discord.gg/jb).
+## Changes from TrollRestore
+- Does not install TrollStore
+- Skips rebooting (disabled with an `if False:`)
 
 # Credits
 * [JJTech](https://github.com/JJTech0130) - Sparserestore (the main library used to restore the TrollHelper binary)
