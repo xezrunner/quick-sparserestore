@@ -45,85 +45,67 @@ def cli(ctx, service_provider: LockdownClient) -> None:
         return
 
     os_name = (os_names[device_class] + " ") if device_class in os_names else ""
-    if (
-        device_version < parse_version("15.0")
-        or device_version > parse_version("17.0")
-        or parse_version("16.7") < device_version < parse_version("17.0")
-        or device_version == parse_version("16.7")
-        and device_build != "20H18"  # 16.7 RC
-    ):
-        click.secho(f"{os_name}{device_version} ({device_build}) is not supported.", fg="red")
-        click.secho("This tool is only compatible with iOS/iPadOS 15.0 - 16.7 RC and 17.0.", fg="red")
-        return
-
-    app = click.prompt(
-        """
-Please specify the removable system app you want to replace with TrollStore Helper.
-If you don't know which app to specify, specify the Tips app.
-
-Enter the app name"""
-    )
-
-    if not app.endswith(".app"):
-        app += ".app"
-
-    apps_json = InstallationProxyService(service_provider).get_apps(application_type="System", calculate_sizes=False)
-
-    app_path = None
-    for key, value in apps_json.items():
-        if isinstance(value, dict) and "Path" in value:
-            potential_path = Path(value["Path"])
-            if potential_path.name.lower() == app.lower():
-                app_path = potential_path
-                app = app_path.name
-
-    if not app_path:
-        click.secho(f"Failed to find the removable system app '{app}'!", fg="red")
-        click.secho(f"Make sure you typed the app name correctly, and that the system app '{app}' is installed to your device.", fg="red")
-        return
-    elif Path("/private/var/containers/Bundle/Application") not in app_path.parents:
-        click.secho(f"'{app}' is not a removable system app!", fg="red")
-        click.secho("Please choose a removable system app. These will be Apple-made apps that can be deleted and re-downloaded.", fg="red")
-        return
-
-    app_uuid = app_path.parent.name
-
-    try:
-        response = requests.get("https://github.com/opa334/TrollStore/releases/latest/download/PersistenceHelper_Embedded")
-        response.raise_for_status()
-        helper_contents = response.content
-    except Exception as e:
-        click.secho(f"Failed to download TrollStore Helper: {e}", fg="red")
-        return
-    click.secho(f"Replacing {app} with TrollStore Helper. (UUID: {app_uuid})", fg="yellow")
+    click.secho(f"{os_name}{device_version} ({device_build})")
 
     back = backup.Backup(
         files=[
             backup.Directory("", "RootDomain"),
             backup.Directory("Library", "RootDomain"),
             backup.Directory("Library/Preferences", "RootDomain"),
-            backup.ConcreteFile("Library/Preferences/temp", "RootDomain", owner=33, group=33, contents=helper_contents, inode=0),
+            
             backup.Directory(
                 "",
-                f"SysContainerDomain-../../../../../../../../var/backup/var/containers/Bundle/Application/{app_uuid}/{app}",
+                f"SysContainerDomain-../../../../../../../../var/preferences/FeatureFlags",
                 owner=33,
                 group=33,
             ),
             backup.ConcreteFile(
                 "",
-                f"SysContainerDomain-../../../../../../../../var/backup/var/containers/Bundle/Application/{app_uuid}/{app}/{app.split('.')[0]}",
+                f"SysContainerDomain-../../../../../../../../var/preferences/FeatureFlags/Global.plist",
                 owner=33,
                 group=33,
-                contents=b"",
+                #contents=open("xezrunner/FeatureFlags.plist", "rb").read(),  # Stage 1
+                contents=open("xezrunner/empty.plist", "rb").read(),         # Stage 2
+            ),
+
+            backup.Directory(
+                "",
+                f"SysContainerDomain-../../../../../../../../var/db/eligibilityd",
+                owner=33,
+                group=33,
+            ),
+            backup.ConcreteFile(
+                "",
+                f"SysContainerDomain-../../../../../../../../var/db/eligibilityd/eligibility.plist",
+                owner=33,
+                group=33,
+                contents=open("xezrunner/eligibility.plist", "rb").read(),
                 inode=0,
             ),
+
+            backup.Directory(
+                "",
+                f"SysContainerDomain-../../../../../../../../var/containers/Shared/SystemGroup/systemgroup.com.apple.mobilegestaltcache/Library/Caches",
+                owner=33,
+                group=33,
+            ),
             backup.ConcreteFile(
                 "",
-                "SysContainerDomain-../../../../../../../../var/.backup.i/var/root/Library/Preferences/temp",
-                owner=501,
-                group=501,
-                contents=b"",
-            ),  # Break the hard link
+                f"SysContainerDomain-../../../../../../../../var/containers/Shared/SystemGroup/systemgroup.com.apple.mobilegestaltcache/Library/Caches/com.apple.MobileGestalt.plist",
+                owner=33,
+                group=33,
+                contents=open("xezrunner/mg.plist", "rb").read(), # Supply your own MobileGestalt!
+            ),
+
+            # backup.ConcreteFile(
+            #     "",
+            #     "SysContainerDomain-../../../../../../../../var/.backup.i/var/root/Library/Preferences/temp",
+            #     owner=501,
+            #     group=501,
+            #     contents=b"",
+            # ),
+            
+            # Break the hard link
             backup.ConcreteFile("", "SysContainerDomain-../../../../../../../.." + "/crash_on_purpose", contents=b""),
         ]
     )
@@ -138,13 +120,12 @@ Enter the app name"""
         elif "crash_on_purpose" not in str(e):
             raise e
 
-    click.secho("Rebooting device", fg="green")
+    click.secho("Success!", fg="green")
 
-    with DiagnosticsService(service_provider) as diagnostics_service:
-        diagnostics_service.restart()
-
-    click.secho("Make sure you turn Find My iPhone back on if you use it after rebooting.", fg="green")
-    click.secho("Make sure to install a proper persistence helper into the app you chose after installing TrollStore!\n", fg="green")
+    if False:
+        with DiagnosticsService(service_provider) as diagnostics_service:
+            click.secho("Rebooting device...", fg="green")
+            diagnostics_service.restart()
 
 
 def main():
