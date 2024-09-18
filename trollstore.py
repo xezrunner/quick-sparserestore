@@ -53,6 +53,7 @@ def cli(ctx, service_provider: LockdownClient) -> None:
             backup.Directory("Library", "RootDomain"),
             backup.Directory("Library/Preferences", "RootDomain"),
             
+            # Feature flags are probably unnecessary to change, since most of the SAE-related stuff is already enabled by default.
             backup.Directory(
                 "",
                 f"SysContainerDomain-../../../../../../../../var/preferences/FeatureFlags",
@@ -68,6 +69,7 @@ def cli(ctx, service_provider: LockdownClient) -> None:
                 contents=open("xezrunner/empty.plist", "rb").read(),         # Stage 2
             ),
 
+            # Eligibility (bypasses EU too!)
             backup.Directory(
                 "",
                 f"SysContainerDomain-../../../../../../../../var/db/eligibilityd",
@@ -83,6 +85,11 @@ def cli(ctx, service_provider: LockdownClient) -> None:
                 inode=0,
             ),
 
+            # MobileGestalt
+            # Get your own and modify it!
+            # - You need to add 'DeviceSupportsGenerativeModelSystems' (boolean: YES).
+            # - Change ProductType to "16,2" or newer for stage 1; wait for models to download, then change it back to what it was.
+            # Do NOT remove the first key, as that is required for SAE to work.
             backup.Directory(
                 "",
                 f"SysContainerDomain-../../../../../../../../var/containers/Shared/SystemGroup/systemgroup.com.apple.mobilegestaltcache/Library/Caches",
@@ -94,7 +101,7 @@ def cli(ctx, service_provider: LockdownClient) -> None:
                 f"SysContainerDomain-../../../../../../../../var/containers/Shared/SystemGroup/systemgroup.com.apple.mobilegestaltcache/Library/Caches/com.apple.MobileGestalt.plist",
                 owner=33,
                 group=33,
-                contents=open("xezrunner/mg.plist", "rb").read(), # Supply your own MobileGestalt!
+                contents=open("xezrunner/com.apple.MobileGestalt.plist", "rb").read(),
             ),
 
             # backup.ConcreteFile(
@@ -105,7 +112,7 @@ def cli(ctx, service_provider: LockdownClient) -> None:
             #     contents=b"",
             # ),
             
-            # Break the hard link
+            # Don't restore!
             backup.ConcreteFile("", "SysContainerDomain-../../../../../../../.." + "/crash_on_purpose", contents=b""),
         ]
     )
