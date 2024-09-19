@@ -65,8 +65,7 @@ def cli(ctx, service_provider: LockdownClient) -> None:
                 f"SysContainerDomain-../../../../../../../../var/preferences/FeatureFlags/Global.plist",
                 owner=33,
                 group=33,
-                #contents=open("xezrunner/FeatureFlags.plist", "rb").read(),  # Stage 1
-                contents=open("xezrunner/empty.plist", "rb").read(),         # Stage 2
+                contents=open("xezrunner/FeatureFlags.plist", "rb").read(),  # Stage 1
             ),
 
             # Eligibility (bypasses EU too!)
