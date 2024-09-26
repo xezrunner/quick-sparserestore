@@ -53,20 +53,21 @@ def cli(ctx, service_provider: LockdownClient) -> None:
             backup.Directory("Library", "RootDomain"),
             backup.Directory("Library/Preferences", "RootDomain"),
             
-            # Feature flags are probably unnecessary to change, since most of the SAE-related stuff is already enabled by default.
-            backup.Directory(
-                "",
-                f"SysContainerDomain-../../../../../../../../var/preferences/FeatureFlags",
-                owner=33,
-                group=33,
-            ),
-            backup.ConcreteFile(
-                "",
-                f"SysContainerDomain-../../../../../../../../var/preferences/FeatureFlags/Global.plist",
-                owner=33,
-                group=33,
-                contents=open("xezrunner/FeatureFlags.plist", "rb").read(),  # Stage 1
-            ),
+            # Feature flags are unnecessary to change if spoofing, since most of the SAE-related stuff is already enabled by default.
+            # When not spoofing, some/one of the Siri flags forces the new UI anyway, though it might break Siri.
+            #backup.Directory(
+            #    "",
+            #    f"SysContainerDomain-../../../../../../../../var/preferences/FeatureFlags",
+            #    owner=33,
+            #    group=33,
+            #),
+            #backup.ConcreteFile(
+            #    "",
+            #    f"SysContainerDomain-../../../../../../../../var/preferences/FeatureFlags/Global.plist",
+            #    owner=33,
+            #    group=33,
+            #    contents=open("xezrunner/FeatureFlags.plist", "rb").read(),  # Stage 1
+            #),
 
             # Eligibility (bypasses EU too!)
             backup.Directory(
@@ -89,19 +90,19 @@ def cli(ctx, service_provider: LockdownClient) -> None:
             # - You need to add 'DeviceSupportsGenerativeModelSystems' (boolean: YES).
             # - Change ProductType to "16,2" or newer for stage 1; wait for models to download, then change it back to what it was.
             # Do NOT remove the first key, as that is required for SAE to work.
-            backup.Directory(
-                "",
-                f"SysContainerDomain-../../../../../../../../var/containers/Shared/SystemGroup/systemgroup.com.apple.mobilegestaltcache/Library/Caches",
-                owner=33,
-                group=33,
-            ),
-            backup.ConcreteFile(
-                "",
-                f"SysContainerDomain-../../../../../../../../var/containers/Shared/SystemGroup/systemgroup.com.apple.mobilegestaltcache/Library/Caches/com.apple.MobileGestalt.plist",
-                owner=33,
-                group=33,
-                contents=open("xezrunner/com.apple.MobileGestalt.plist", "rb").read(),
-            ),
+            #backup.Directory(
+            #    "",
+            #    f"SysContainerDomain-../../../../../../../../var/containers/Shared/SystemGroup/systemgroup.com.apple.mobilegestaltcache/Library/Caches",
+            #    owner=33,
+            #    group=33,
+            #),
+            #backup.ConcreteFile(
+            #    "",
+            #    f"SysContainerDomain-../../../../../../../../var/containers/Shared/SystemGroup/systemgroup.com.apple.mobilegestaltcache/Library/Caches/com.apple.MobileGestalt.plist",
+            #    owner=33,
+            #    group=33,
+            #    contents=open("xezrunner/com.apple.MobileGestalt.plist", "rb").read(),
+            #),
 
             # backup.ConcreteFile(
             #     "",
