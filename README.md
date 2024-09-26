@@ -9,6 +9,13 @@ Guide for Apple Intelligence: https://gist.github.com/f1shy-dev/23b4a78dc283edd3
 - Does not install TrollStore
 - Skips rebooting (disabled with an `if False:`)
 
+# Usage
+To run the script, clone this repository and run the following commands:
+```sh
+pip install -r requirements.txt
+python3 trollstore.py
+```
+
 # Credits
 * [JJTech](https://github.com/JJTech0130) - Sparserestore (the main library used to restore the TrollHelper binary)
 * [Nathan](https://github.com/verygenericname) - Turning sparserestore into a TrollStore installer
