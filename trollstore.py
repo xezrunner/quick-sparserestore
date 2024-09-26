@@ -85,6 +85,20 @@ def cli(ctx, service_provider: LockdownClient) -> None:
                 inode=0,
             ),
 
+            backup.Directory(
+                "",
+                f"SysContainerDomain-../../../../../../../../var/db/os_eligibility/",
+                owner=33,
+                group=33,
+            ),
+            backup.ConcreteFile(
+                "",
+                f"SysContainerDomain-../../../../../../../../var/db/os_eligibility/eligibility.plist",
+                owner=33,
+                group=33,
+                contents=open("xezrunner/os_eligibility.plist", "rb").read(),
+            ),
+
             # MobileGestalt
             # Get your own and modify it!
             # - You need to add 'DeviceSupportsGenerativeModelSystems' (boolean: YES).
