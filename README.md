@@ -14,10 +14,10 @@ To run the script, clone this repository and run the following commands:
 ```sh
 pip install -r requirements.txt
 python3 trollstore.py
+```
 
 On your Mac, copy `xezrunner/os_eligibility.plist` to `var/db/os_eligibility/eligibility.plist` (delete previous, replace/rename with new one).
 Then, Command+I on it and check the Locked checkbox.
-```
 
 # Credits
 * [JJTech](https://github.com/JJTech0130) - Sparserestore (the main library used to restore the TrollHelper binary)
